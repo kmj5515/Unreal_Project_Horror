@@ -14,6 +14,9 @@ AHorrorCharacterL1::AHorrorCharacterL1()
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
 	CameraComponent->SetupAttachment(GetCapsuleComponent());
 	CameraComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 60.0f));
+	CameraComponent->bUsePawnControlRotation = true;
+
+	bUseControllerRotationPitch = true;
 
 }
 
@@ -35,6 +38,5 @@ void AHorrorCharacterL1::Tick(float DeltaTime)
 void AHorrorCharacterL1::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
 }
 
