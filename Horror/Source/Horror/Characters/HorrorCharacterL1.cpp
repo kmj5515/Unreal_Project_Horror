@@ -4,6 +4,9 @@
 #include "HorrorCharacterL1.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
+#include "InputActionValue.h"
 
 // Sets default values
 AHorrorCharacterL1::AHorrorCharacterL1()
@@ -24,7 +27,20 @@ AHorrorCharacterL1::AHorrorCharacterL1()
 void AHorrorCharacterL1::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
+	{
+		if (ULocalPlayer* LocalPlayer = PlayerController->GetLocalPlayer())
+		{
+			if (UEnhancedInputLocalPlayerSubsystem* InputSubsystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
+			{
+				if (DefaultMappingContext != nullptr)
+				{
+					InputSubsystem->AddMappingContext(DefaultMappingContext, 0);
+				}
+			}
+		}
+	}
 }
 
 // Called every frame
@@ -38,5 +54,55 @@ void AHorrorCharacterL1::Tick(float DeltaTime)
 void AHorrorCharacterL1::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
+	{
+		if (LookAction != nullptr)
+		{
+			EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AHorrorCharacterL1::Look);
+		}
+		if (MoveAction != nullptr)
+		{
+			EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AHorrorCharacterL1::Move);
+		}
+		if (JumpAction != nullptr)
+		{
+			EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AHorrorCharacterL1::StartJump);
+			EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AHorrorCharacterL1::StopJump);
+		}
+	}
+}
+
+void AHorrorCharacterL1::Look(const FInputActionValue& Value)
+{
+	const FVector2D LookAxisValue = Value.Get<FVector2D>();
+	AddControllerYawInput(LookAxisValue.X);
+	AddControllerPitchInput(-LookAxisValue.Y);
+}
+
+void AHorrorCharacterL1::Move(const FInputActionValue& Value)
+{
+	const FVector2D MoveAxisValue = Value.Get<FVector2D>();
+
+	if (Controller != nullptr)
+	{
+		const FRotator ControllerRotation = Controller->GetControlRotation();
+		const FRotator YawRotation(0.0f, ControllerRotation.Yaw, 0.0f);
+		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+		AddMovementInput(ForwardDirection, MoveAxisValue.Y);
+		AddMovementInput(RightDirection, MoveAxisValue.X);
+	}
+}
+
+void AHorrorCharacterL1::StartJump(const FInputActionValue& Value)
+{
+	Jump();
+}
+
+void AHorrorCharacterL1::StopJump(const FInputActionValue& Value)
+{
+	StopJumping();
 }
 
