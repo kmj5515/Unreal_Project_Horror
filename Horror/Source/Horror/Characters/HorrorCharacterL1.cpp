@@ -6,6 +6,7 @@
 #include "Components/CapsuleComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "../Interfaces/Interaction.h"
 #include "InputActionValue.h"
 
 // Sets default values
@@ -70,6 +71,10 @@ void AHorrorCharacterL1::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 			EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AHorrorCharacterL1::StartJump);
 			EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AHorrorCharacterL1::StopJump);
 		}
+		if (InteractAction != nullptr)
+		{
+			EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &AHorrorCharacterL1::Interact);
+		}
 	}
 }
 
@@ -104,5 +109,43 @@ void AHorrorCharacterL1::StartJump(const FInputActionValue& Value)
 void AHorrorCharacterL1::StopJump(const FInputActionValue& Value)
 {
 	StopJumping();
+}
+
+void AHorrorCharacterL1::Interact(const FInputActionValue& Value)
+{
+	if (CameraComponent == nullptr)
+	{
+		return;
+	}
+
+	const FVector TraceStart = CameraComponent->GetComponentLocation();
+	const FVector TraceEnd = TraceStart + (CameraComponent->GetForwardVector() * InteractionTraceDistance);
+
+	FHitResult HitResult;
+	FCollisionQueryParams QueryParams(SCENE_QUERY_STAT(InteractionTrace), false, this);
+
+	const bool bHasHit = GetWorld()->LineTraceSingleByChannel(
+		HitResult,
+		TraceStart,
+		TraceEnd,
+		ECC_Visibility,
+		QueryParams
+	);
+
+	if (!bHasHit)
+	{
+		return;
+	}
+
+	AActor* HitActor = HitResult.GetActor();
+	if (HitActor == nullptr)
+	{
+		return;
+	}
+
+	if (HitActor->GetClass()->ImplementsInterface(UInteraction::StaticClass()))
+	{
+		IInteraction::Execute_Interact(HitActor, this);
+	}
 }
 

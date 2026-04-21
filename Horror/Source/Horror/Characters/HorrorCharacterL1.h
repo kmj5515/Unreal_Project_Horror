@@ -45,6 +45,9 @@ protected:
 	UFUNCTION()
 	void StopJump(const FInputActionValue& Value);
 
+	UFUNCTION()
+	void Interact(const FInputActionValue& Value);
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	UInputMappingContext* DefaultMappingContext = nullptr;
 
@@ -56,5 +59,11 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	UInputAction* JumpAction = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	UInputAction* InteractAction = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Interaction")
+	float InteractionTraceDistance = 300.0f;
 
 };
