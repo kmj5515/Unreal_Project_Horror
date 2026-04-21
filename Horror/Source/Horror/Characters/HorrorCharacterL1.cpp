@@ -6,6 +6,7 @@
 #include "Components/CapsuleComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "../Interfaces/Interaction.h"
 #include "InputActionValue.h"
 
@@ -21,7 +22,7 @@ AHorrorCharacterL1::AHorrorCharacterL1()
 	CameraComponent->bUsePawnControlRotation = true;
 
 	bUseControllerRotationPitch = true;
-
+	GetCharacterMovement()->GetNavAgentPropertiesRef().bCanCrouch = true;
 }
 
 // Called when the game starts or when spawned
@@ -71,6 +72,11 @@ void AHorrorCharacterL1::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 			EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AHorrorCharacterL1::StartJump);
 			EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AHorrorCharacterL1::StopJump);
 		}
+		if (CrouchAction != nullptr)
+		{
+			EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Started, this, &AHorrorCharacterL1::StartCrouch);
+			EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Completed, this, &AHorrorCharacterL1::StopCrouch);
+		}
 		if (InteractAction != nullptr)
 		{
 			EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &AHorrorCharacterL1::Interact);
@@ -109,6 +115,16 @@ void AHorrorCharacterL1::StartJump(const FInputActionValue& Value)
 void AHorrorCharacterL1::StopJump(const FInputActionValue& Value)
 {
 	StopJumping();
+}
+
+void AHorrorCharacterL1::StartCrouch(const FInputActionValue& Value)
+{
+	Crouch();
+}
+
+void AHorrorCharacterL1::StopCrouch(const FInputActionValue& Value)
+{
+	UnCrouch();
 }
 
 void AHorrorCharacterL1::Interact(const FInputActionValue& Value)

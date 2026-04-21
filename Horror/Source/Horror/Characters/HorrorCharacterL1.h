@@ -46,6 +46,12 @@ protected:
 	void StopJump(const FInputActionValue& Value);
 
 	UFUNCTION()
+	void StartCrouch(const FInputActionValue& Value);
+
+	UFUNCTION()
+	void StopCrouch(const FInputActionValue& Value);
+
+	UFUNCTION()
 	void Interact(const FInputActionValue& Value);
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
@@ -59,6 +65,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	UInputAction* JumpAction = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	UInputAction* CrouchAction = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	UInputAction* InteractAction = nullptr;
