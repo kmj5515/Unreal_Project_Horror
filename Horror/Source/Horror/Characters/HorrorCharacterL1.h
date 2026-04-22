@@ -9,6 +9,7 @@
 class UCameraComponent;
 class UInputAction;
 class UInputMappingContext;
+class UUserWidget;
 struct FInputActionValue;
 
 UCLASS()
@@ -28,6 +29,9 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	void Initialize(TSubclassOf<UUserWidget> InMainHUDWidgetClass);
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
@@ -74,5 +78,11 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Interaction")
 	float InteractionTraceDistance = 300.0f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
+	TSubclassOf<UUserWidget> MainHUDWidgetClass;
+
+	UPROPERTY()
+	UUserWidget* MainHUDWidget = nullptr;
 
 };

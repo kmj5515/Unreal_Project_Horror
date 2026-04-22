@@ -9,6 +9,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "../Interfaces/Interaction.h"
 #include "InputActionValue.h"
+#include "Blueprint/UserWidget.h"
 
 // Sets default values
 AHorrorCharacterL1::AHorrorCharacterL1()
@@ -43,6 +44,7 @@ void AHorrorCharacterL1::BeginPlay()
 			}
 		}
 	}
+
 }
 
 // Called every frame
@@ -50,6 +52,24 @@ void AHorrorCharacterL1::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+{
+	if (InMainHUDWidgetClass == nullptr)
+	{
+		return;
+	}
+
+	if (MainHUDWidget != nullptr)
+
+	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
+	{
+		MainHUDWidget = CreateWidget<UUserWidget>(PlayerController, InMainHUDWidgetClass);
+		if (MainHUDWidget != nullptr)
+		{
+			MainHUDWidget->AddToViewport();
+		}
+	}
 }
 
 // Called to bind functionality to input
