@@ -45,6 +45,7 @@ void AHorrorCharacterL1::BeginPlay()
 		}
 	}
 
+	Initialize(MainHUDWidgetClass);
 }
 
 // Called every frame
@@ -54,6 +55,7 @@ void AHorrorCharacterL1::Tick(float DeltaTime)
 
 }
 
+void AHorrorCharacterL1::Initialize(TSubclassOf<UUserWidget> InMainHUDWidgetClass)
 {
 	if (InMainHUDWidgetClass == nullptr)
 	{
@@ -61,6 +63,10 @@ void AHorrorCharacterL1::Tick(float DeltaTime)
 	}
 
 	if (MainHUDWidget != nullptr)
+	{
+		MainHUDWidget->RemoveFromParent();
+		MainHUDWidget = nullptr;
+	}
 
 	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
 	{
